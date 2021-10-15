@@ -130,4 +130,4 @@ msgstr[1] ""`
 
 const createPotFile = (json) => `${POT_FILE_META}${potTime(json)}\n`
 
-module.exports = { potFile: createPotFile }
+module.exports = { createPotFile, replaceVarsPlaceholders }
