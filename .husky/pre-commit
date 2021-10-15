@@ -5,6 +5,7 @@
 TRANSFILE=src/locales/en.json
 POTFILE=src/locales/po-files/openverse.pot
 CHANGED=$(git diff --staged --name-only HEAD)
+echo files changed: $CHANGED
 
 if [[ "$CHANGED" == *"$TRANSFILE"* ]] && [[ "$CHANGED" != *"$POTFILE"* ]]; then
   npm run i18n:generate-pot
