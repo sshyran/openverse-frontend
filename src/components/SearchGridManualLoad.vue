@@ -3,7 +3,6 @@
     ref="searchGrid"
     :class="{
       'search-grid': true,
-      'search-grid__contain-images': shouldContainImages,
     }"
   >
     <div ref="gridItems" class="search-grid_ctr">
