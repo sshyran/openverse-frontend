@@ -1,12 +1,16 @@
 <template>
-  <div id="content-report-form" class="p-4 arrow-popup">
+  <div
+    id="content-report-form"
+    class="p-4 arrow-popup"
+    data-testid="content-report-form"
+  >
     <button
       :aria-label="$t('photo-details.aria.close-form')"
       class="button close-button is-text tiny float-right block bg-white"
+      type="button"
       @click="closeForm()"
-      @keyup.enter="closeForm()"
     >
-      <i class="icon cross" />
+      <CloseIcon width="24" height="24" />
     </button>
     <DmcaNotice
       v-if="selectedCopyright"
@@ -20,7 +24,7 @@
       :image-u-r-l="image.url"
       :provider-name="providerName"
     />
-    <ReportError v-else-if="reportFailed" />
+    <ReportError v-else-if="reportFailed" @back-click="backToReportStart" />
 
     <OtherIssueForm
       v-else-if="selectedOther"
@@ -31,49 +35,25 @@
       <h5 class="b-header mb-4">
         {{ $t('photo-details.content-report.title') }}
       </h5>
-      <fieldset class="mb-4">
+      <fieldset class="mb-4 flex flex-col">
         <legend class="mb-4">
           {{ $t('photo-details.content-report.issue') }}
         </legend>
-
-        <div>
-          <label for="dmca" class="ml-2">
-            <input
-              id="dmca"
-              v-model="selectedReason"
-              type="radio"
-              name="type"
-              value="dmca"
-            />
-            {{ $t('photo-details.content-report.copyright') }}
-          </label>
-        </div>
-
-        <div>
-          <label for="mature" class="ml-2">
-            <input
-              id="mature"
-              v-model="selectedReason"
-              type="radio"
-              name="type"
-              value="mature"
-            />
-            {{ $t('photo-details.content-report.mature') }}
-          </label>
-        </div>
-
-        <div>
-          <label for="other" class="ml-2">
-            <input
-              id="other"
-              v-model="selectedReason"
-              type="radio"
-              name="type"
-              value="other"
-            />
-            {{ $t('photo-details.content-report.other') }}
-          </label>
-        </div>
+        <label
+          v-for="reason in reasons"
+          :key="reason"
+          :for="reason"
+          class="ml-2 mb-2"
+        >
+          <input
+            :id="reason"
+            v-model="selectedReason"
+            type="radio"
+            name="type"
+            :value="reason"
+          />
+          {{ $t(`photo-details.content-report.${reason}`) }}
+        </label>
       </fieldset>
 
       <p class="caption font-semibold text-gray mb-4">
@@ -83,7 +63,7 @@
       <button
         type="button"
         :disabled="selectedReason === null"
-        class="button next-button tiny is-success float-right"
+        class="float-right bg-trans-blue text-white py-2 px-4 font-semibold border-2 border-tx rounded-sm disabled:opacity-50"
         @click="onIssueSelected()"
         @keyup.enter="onIssueSelected()"
       >
@@ -94,15 +74,12 @@
 </template>
 
 <script>
-import getProviderName from '~/utils/get-provider-name'
-import dmcaNotice from './DmcaNotice'
+import CloseIcon from '~/assets/icons/close.svg?inline'
+import DmcaNotice from './DmcaNotice'
 import OtherIssueForm from './OtherIssueForm'
 import DoneMessage from './DoneMessage'
 import ReportError from './ReportError'
-import { SEND_CONTENT_REPORT } from '~/constants/action-types'
-import { REPORT_FORM_CLOSED } from '~/constants/mutation-types'
-import { PROVIDER, REPORT_CONTENT } from '~/constants/store-modules'
-import { mapActions, mapMutations, mapState } from 'vuex'
+import ReportService from '~/data/report-service'
 
 const dmcaFormUrl =
   'https://docs.google.com/forms/d/e/1FAIpQLSd0I8GsEbGQLdaX4K_F6V2NbHZqN137WMZgnptUpzwd-kbDKA/viewform'
@@ -111,51 +88,62 @@ export default {
   name: 'ContentReportForm',
   components: {
     DoneMessage,
-    dmcaNotice,
+    DmcaNotice,
     ReportError,
     OtherIssueForm,
+    CloseIcon,
   },
-  props: ['image'],
+  props: ['image', 'providerName', 'reportServiceProp'],
   data() {
     return {
       selectedReason: null,
       selectedOther: false,
       selectedCopyright: false,
       dmcaFormUrl,
+      isReportSent: false,
+      reportFailed: false,
+      reasons: ['dmca', 'mature', 'other'],
     }
   },
   computed: {
-    ...mapState(REPORT_CONTENT, ['isReportSent', 'reportFailed']),
-    ...mapState(PROVIDER, ['imageProviders']),
-    providerName() {
-      return getProviderName(this.imageProviders, this.image.provider)
+    reportService() {
+      return this.reportServiceProp ? this.reportServiceProp : ReportService
     },
   },
   methods: {
-    ...mapActions(REPORT_CONTENT, { sendReport: SEND_CONTENT_REPORT }),
-    ...mapMutations(REPORT_CONTENT, { closeReportForm: REPORT_FORM_CLOSED }),
     onIssueSelected() {
       if (this.selectedReason === 'other') {
         this.selectedOther = true
       } else if (this.selectedReason === 'dmca') {
         this.selectedCopyright = true
       } else {
-        this.sendContentReport()
+        this.sendContentReport({})
       }
     },
     onBackClick() {
       this.selectedOther = false
       this.selectedCopyright = false
     },
-    sendContentReport(description = '') {
-      this.sendReport({
-        identifier: this.$props.image.id,
-        reason: this.selectedReason,
-        description,
-      })
+    backToReportStart() {
+      this.reportFailed = false
+      this.isReportSent = false
+    },
+    async sendContentReport({ description = '' }) {
+      try {
+        await this.reportService.sendReport({
+          identifier: this.$props.image.id,
+          reason: this.selectedReason,
+          description,
+        })
+        this.isReportSent = true
+      } catch (error) {
+        this.reportFailed = true
+      }
     },
     closeForm() {
-      this.closeReportForm
+      this.isReportSent = false
+      this.reportFailed = false
+      this.$emit('close-form')
     },
   },
 }

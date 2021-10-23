@@ -1,12 +1,15 @@
-import PhotoDetails from '~/components/ImageDetails/PhotoDetails'
+import Vuex from 'vuex'
+import render from '../../../test-utils/render'
+import i18n from '../../../test-utils/i18n'
+import { createLocalVue } from '@vue/test-utils'
 import {
   DETAIL_PAGE_EVENTS,
   SEND_DETAIL_PAGE_EVENT,
 } from '~/constants/usage-data-analytics-types'
-import render from '../../../test-utils/render'
-import i18n from '../../../test-utils/i18n'
-import { REPORT_CONTENT, USAGE_DATA } from '~/constants/store-modules'
-import { TOGGLE_REPORT_FORM_VISIBILITY } from '~/constants/mutation-types'
+import { USAGE_DATA } from '~/constants/store-modules'
+
+import ContentReportForm from '~/components/ContentReport/ContentReportForm'
+import PhotoDetails from '~/components/ImageDetails/PhotoDetails'
 
 const stubs = {
   LegalDisclaimer: true,
@@ -138,7 +141,6 @@ describe('PhotoDetails', () => {
       mocks: {
         $router: routerMock,
         $route: routeMock,
-        ...storeState,
         $t,
       },
     }
@@ -150,13 +152,27 @@ describe('PhotoDetails', () => {
   })
 
   it('should toggle visibility of report form on report button click', async () => {
+    const localVue = createLocalVue()
+    localVue.use(Vuex)
+    localVue.component('ContentReportForm', ContentReportForm)
+    const storeMock = new Vuex.Store({
+      modules: {
+        provider: {
+          namespaced: true,
+          getters: {
+            getProviderName: () => () => 'provider',
+          },
+        },
+      },
+    })
+    options.localVue = localVue
+    options.store = storeMock
+    options.stubs.ContentReportForm = false
     const wrapper = render(PhotoDetails, options)
-    const button = wrapper.find('.report')
-    await button.trigger('click')
+    const button = wrapper.find('[data-testid="content-report-button"]')
 
-    expect(commitMock).toHaveBeenCalledWith(
-      `${REPORT_CONTENT}/${TOGGLE_REPORT_FORM_VISIBILITY}`
-    )
+    await button.trigger('click')
+    expect(wrapper.find('[data-testid="content-report-form"]')).toBeTruthy()
   })
 
   it('report form should be invisible by default', () => {
