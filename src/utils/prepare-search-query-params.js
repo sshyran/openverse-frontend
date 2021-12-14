@@ -20,7 +20,7 @@ export default function prepareSearchQueryParams(searchParams) {
     delete params.q
   }
   Object.keys(params).forEach((key) => {
-    if (params[key] === '' || params[key] === false) {
+    if (params[key] === '' || params[key] === false || typeof params[key] === 'undefined') {
       delete params[key]
     }
   })
