@@ -53,8 +53,8 @@
     <VHeaderFilter
       v-if="isSearchRoute"
       :hide-buttons="showCloseButton"
-      @close="close()"
       @open="openMenuModal(menus.FILTERS)"
+      @close="close()"
     />
   </header>
 </template>
@@ -251,7 +251,6 @@ const VHeader = defineComponent({
         ...store.getters['search/searchQueryParams'],
       })
     }
-
 
     return {
       closeIcon,

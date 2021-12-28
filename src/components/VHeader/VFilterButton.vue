@@ -40,7 +40,7 @@ const VFilterButton = defineComponent({
   setup(props, { emit }) {
     const { i18n, store } = useContext()
     const { pressed } = toRefs(props)
-    const isMdScreen = inject('isMdScreen')
+    const isMinScreenMd = inject('isMinScreenMd')
     const isHeaderScrolled = inject('isHeaderScrolled')
     const filterCount = computed(
       () => store.getters['search/appliedFilterTags'].length
@@ -53,7 +53,7 @@ const VFilterButton = defineComponent({
      */
     const variant = computed(() => {
       // Show the bordered state by default, unless below md
-      let value = isMdScreen.value ? 'tertiary' : 'action-menu'
+      let value = isMinScreenMd.value ? 'tertiary' : 'action-menu'
 
       if (isHeaderScrolled.value) {
         value = 'action-menu'
@@ -70,7 +70,7 @@ const VFilterButton = defineComponent({
 
     const label = computed(() => {
       // Below medium viewport logic
-      if (!isMdScreen.value) {
+      if (!isMinScreenMd.value) {
         return isHeaderScrolled.value
           ? filterCount.value
           : i18n.tc('header.filter-button.with-count', filterCount.value)
@@ -91,7 +91,7 @@ const VFilterButton = defineComponent({
         return false
       }
       // Below the medium viewport, only show when there's no filters applied.
-      if (!isMdScreen.value) {
+      if (!isMinScreenMd.value) {
         return !isHeaderScrolled.value || !filtersAreApplied.value
       }
       return true
@@ -99,7 +99,7 @@ const VFilterButton = defineComponent({
 
     // Hide the label entirely when no filters are applied on mobile.
     const showLabel = computed(() => {
-      if (!isMdScreen.value && !filtersAreApplied.value) {
+      if (!isMinScreenMd.value && !filtersAreApplied.value) {
         return false
       }
       return true

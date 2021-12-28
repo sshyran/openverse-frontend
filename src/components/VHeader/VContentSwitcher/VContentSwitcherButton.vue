@@ -11,8 +11,8 @@
       buttonLabel
     }}</span>
     <VIcon
-      v-show="isMdScreen"
-      :class="{ 'ms-2': isMdScreen }"
+      v-show="isMinScreenMd"
+      :class="{ 'ms-2': isMinScreenMd }"
       :icon-path="caretDownIcon"
     />
   </VButton>
@@ -44,10 +44,10 @@ export default {
   setup(props) {
     const { i18n } = useContext()
     const isHeaderScrolled = inject('isHeaderScrolled')
-    const isMdScreen = inject('isMdScreen')
+    const isMinScreenMd = inject('isMinScreenMd')
 
     const buttonVariant = computed(() => {
-      return isMdScreen.value && !isHeaderScrolled.value
+      return isMinScreenMd.value && !isHeaderScrolled.value
         ? 'tertiary'
         : 'action-menu'
     })
@@ -61,7 +61,7 @@ export default {
       return i18n.t(labelKey)
     })
     const showLabel = computed(
-      () => isMdScreen.value || !isHeaderScrolled.value
+      () => isMinScreenMd.value || !isHeaderScrolled.value
     )
 
     return {
@@ -69,7 +69,7 @@ export default {
       buttonLabel,
       caretDownIcon,
       showLabel,
-      isMdScreen,
+      isMinScreenMd,
     }
   },
 }

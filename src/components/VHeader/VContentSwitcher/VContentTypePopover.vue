@@ -1,7 +1,7 @@
 <template>
   <VItemGroup
     direction="vertical"
-    :bordered="!isMdScreen"
+    :bordered="!isMinScreenMd"
     type="radiogroup"
     class="z-10"
   >
@@ -41,7 +41,7 @@ export default {
   },
   setup(_, { emit }) {
     const content = useContentType()
-    const isMdScreen = inject('isMdScreen')
+    const isMinScreenMd = inject('isMinScreenMd')
     const handleClick = (item) => {
       emit('click', item)
     }
@@ -50,7 +50,7 @@ export default {
       content,
       checkIcon,
       handleClick,
-      isMdScreen,
+      isMinScreenMd,
     }
   },
 }

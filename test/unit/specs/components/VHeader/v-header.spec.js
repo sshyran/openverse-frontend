@@ -6,7 +6,10 @@ import VueI18n from 'vue-i18n'
 import messages from '../../../../../src/locales/en.json'
 
 import VHeader from '~/components/VHeader/VHeader.vue'
-import { useSearchRoute } from '~/composables/use-search-route'
+import {
+  useMatchHomeRoute,
+  useMatchSearchRoutes,
+} from '~/composables/use-match-routes'
 import { isMinScreen, useReducedMotion } from '@/composables/use-media-query'
 import { ref } from '@nuxtjs/composition-api'
 /**
@@ -17,8 +20,9 @@ import { ref } from '@nuxtjs/composition-api'
  * with `mockImplementation(() => ({value: true}))`
  * that may be related.
  */
-jest.mock('~/composables/use-search-route', () => ({
-  useSearchRoute: jest.fn(),
+jest.mock('~/composables/use-match-routes', () => ({
+  useMatchSearchRoutes: jest.fn(),
+  useMatchHomeRoute: jest.fn(),
 }))
 jest.mock('~/composables/use-media-query', () => ({
   isMinScreen: jest.fn(),
@@ -49,6 +53,7 @@ describe('VHeader', () => {
         media: {
           namespaced: true,
           getters: {
+            results: () => ({ count: 2 }),
             fetchState: () => ({
               isFetching: false,
             }),
@@ -56,7 +61,10 @@ describe('VHeader', () => {
         },
         search: {
           namespaced: true,
-          state: { searchType: 'image' },
+          state: {
+            searchType: 'image',
+            query: { q: 'cat', mediaType: 'image' },
+          },
           getters: {
             isAnyFilterApplied: () => appliedFilters.length > 0,
             appliedFilterTags: () => appliedFilters,
@@ -75,7 +83,9 @@ describe('VHeader', () => {
   })
   describe('Non-search header', () => {
     it('shows logo', () => {
-      useSearchRoute.mockImplementation(() => ({ value: false }))
+      useMatchSearchRoutes.mockImplementation(() => ({ matches: ref(false) }))
+      useMatchHomeRoute.mockImplementation(() => ({ matches: ref(true) }))
+
       isMinScreen.mockImplementation(() => ref(true))
 
       render(VHeader, options)
@@ -85,7 +95,8 @@ describe('VHeader', () => {
       expect(logo).toBeVisible()
     })
     it('animates the logo when fetching', () => {
-      useSearchRoute.mockImplementation(() => ({ value: false }))
+      useMatchSearchRoutes.mockImplementation(() => ({ matches: ref(false) }))
+      useMatchHomeRoute.mockImplementation(() => ({ matches: ref(true) }))
       isMinScreen.mockImplementation(() => ref(true))
 
       // todo: mock isFetching: true
@@ -100,7 +111,8 @@ describe('VHeader', () => {
   describe('Search header', () => {
     describe('Above the medium breakpoint', () => {
       it('shows page menu', async () => {
-        useSearchRoute.mockImplementation(() => ({ isSearch: true }))
+        useMatchSearchRoutes.mockImplementation(() => ({ matches: ref(true) }))
+        useMatchHomeRoute.mockImplementation(() => ({ matches: ref(false) }))
         isMinScreen.mockImplementation(() => ref(true))
         useReducedMotion.mockImplementation(() => ({ value: true }))
 
@@ -111,7 +123,8 @@ describe('VHeader', () => {
         expect(menuButton).toBeVisible()
       })
       it('shows content switcher button', async () => {
-        useSearchRoute.mockImplementation(() => ({ isSearch: true }))
+        useMatchSearchRoutes.mockImplementation(() => ({ matches: ref(true) }))
+        useMatchHomeRoute.mockImplementation(() => ({ matches: ref(false) }))
         isMinScreen.mockImplementation(() => ref(true))
         useReducedMotion.mockImplementation(() => ({ value: true }))
 
@@ -124,7 +137,8 @@ describe('VHeader', () => {
     })
     describe('below the medium breakpoint', () => {
       it('does not show page menu', async () => {
-        useSearchRoute.mockImplementation(() => ({ isSearch: true }))
+        useMatchSearchRoutes.mockImplementation(() => ({ matches: ref(true) }))
+        useMatchHomeRoute.mockImplementation(() => ({ matches: ref(false) }))
         isMinScreen.mockImplementation(() => ref(false))
         useReducedMotion.mockImplementation(() => ({ value: true }))
 
@@ -135,7 +149,8 @@ describe('VHeader', () => {
         expect(menuButton).not.toBeInTheDocument()
       })
       it('shows content switcher button', async () => {
-        useSearchRoute.mockImplementation(() => ({ isSearch: true }))
+        useMatchSearchRoutes.mockImplementation(() => ({ matches: ref(true) }))
+        useMatchHomeRoute.mockImplementation(() => ({ matches: ref(false) }))
         isMinScreen.mockImplementation(() => ref(false))
         useReducedMotion.mockImplementation(() => ({ value: true }))
 

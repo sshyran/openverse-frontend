@@ -5,7 +5,7 @@
     @open="$emit('open')"
     @close="$emit('close')"
   >
-    <template v-if="isMdScreen" #page-switcher-button="{ a11yProps }">
+    <template v-if="isMinScreenMd" #page-switcher-button="{ a11yProps }">
       <VPageMenuButton :a11y-props="a11yProps" />
     </template>
     <template #page-switcher-content>
@@ -63,7 +63,7 @@ export default {
     /** @type {import('@nuxtjs/composition-api').Ref<boolean>} */
     const isHeaderScrolled = inject('isHeaderScrolled')
     /** @type {import('@nuxtjs/composition-api').Ref<boolean>} */
-    const isMdScreen = inject('isMdScreen')
+    const isMinScreenMd = inject('isMinScreenMd')
     /** @type {import('@nuxtjs/composition-api').Ref<null|HTMLElement>} */
     const menuModalRef = ref(null)
     const content = useContentType()
@@ -77,11 +77,13 @@ export default {
      * Immediate watch breaks the hydration process, so we use onMounted instead for the first
      * check, and if the screen is wider than mobile, use the VDesktopSwitcher.
      */
-    watch([isMdScreen], ([isMdScreen]) => {
-      switcherComponent.value = isMdScreen ? VDesktopSwitcher : VMobileSwitcher
+    watch([isMinScreenMd], ([isMinScreenMd]) => {
+      switcherComponent.value = isMinScreenMd
+        ? VDesktopSwitcher
+        : VMobileSwitcher
     })
     onMounted(() => {
-      if (isMdScreen.value) {
+      if (isMinScreenMd.value) {
         switcherComponent.value = VDesktopSwitcher
       }
     })
@@ -94,7 +96,7 @@ export default {
     return {
       icons,
       isHeaderScrolled,
-      isMdScreen,
+      isMinScreenMd,
 
       switcherComponent,
       content,

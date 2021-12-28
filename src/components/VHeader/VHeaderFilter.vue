@@ -1,7 +1,7 @@
 <template>
   <div ref="nodeRef">
     <VFilterButton
-      v-show="isMdScreen || (!isMdScreen && !visibleRef && !hideButtons)"
+      v-show="isMinScreenMd || (!isMinScreenMd && !visibleRef && !hideButtons)"
       ref="buttonRef"
       :is-header-scrolled="isHeaderScrolled"
       :pressed="visibleRef"
@@ -27,7 +27,7 @@ import {
 import { useBodyScrollLock } from '~/composables/use-body-scroll-lock'
 import { useFilterSidebarVisibility } from '~/composables/use-filter-sidebar-visibility'
 
-import { VTeleport } from '~/components/VTeleport'
+import VTeleport from '~/components/VTeleport/VTeleport.vue'
 import VFilterButton from '~/components/VHeader/VFilterButton.vue'
 import VSearchGridFilter from '~/components/VFilters/VSearchGridFilter.vue'
 import VModalContent from '~/components/VModal/VModalContent.vue'
@@ -68,7 +68,7 @@ export default {
     const filterSidebar = useFilterSidebarVisibility()
     const { i18n } = useContext()
     /** @type {import('@nuxtjs/composition-api').Ref<boolean>} */
-    const isMdScreen = inject('isMdScreen')
+    const isMinScreenMd = inject('isMinScreenMd')
     /** @type {import('@nuxtjs/composition-api').Ref<boolean>} */
     const isHeaderScrolled = inject('isHeaderScrolled')
 
@@ -84,7 +84,7 @@ export default {
     watch([visibleRef], ([visible]) => {
       triggerA11yProps['aria-expanded'] = visible
       filterSidebar.setVisibility(visible)
-      if (!isMdScreen) {
+      if (!isMinScreenMd) {
         visible ? lock() : unlock()
       }
     })
@@ -125,14 +125,14 @@ export default {
      */
     const options = ref(mobileOptions)
     onMounted(() => {
-      if (isMdScreen.value && filterSidebar.isVisible.value) {
+      if (isMinScreenMd.value && filterSidebar.isVisible.value) {
         open()
       }
     })
     watch(
-      [isMdScreen],
-      ([isMdScreen]) => {
-        if (isMdScreen) {
+      [isMinScreenMd],
+      ([isMinScreenMd]) => {
+        if (isMinScreenMd) {
           filterComponent.value = VSidebarContent
           options.value = desktopOptions
         } else {
@@ -154,7 +154,7 @@ export default {
       close,
       onTriggerClick,
       triggerA11yProps,
-      isMdScreen,
+      isMinScreenMd,
       options,
     }
   },

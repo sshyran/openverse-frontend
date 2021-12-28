@@ -14,15 +14,13 @@ describe('VFilterButton', () => {
   let appliedFilters = []
   let props = {}
   let provided = {
-    isMdScreen: ref(true),
+    isMinScreenMd: ref(true),
     isHeaderScrolled: ref(false),
   }
 
   const i18n = new VueI18n({
     locale: 'en',
-    localeProperties: {
-      dir: 'ltr',
-    },
+    localeProperties: { dir: 'ltr' },
     fallbackLocale: 'en',
     messages: { en: messages },
   })
@@ -45,21 +43,14 @@ describe('VFilterButton', () => {
     options = {
       localVue,
       propsData: props,
-      mocks: {
-        $nuxt: {
-          context: {
-            store: storeMock,
-            i18n,
-          },
-        },
-      },
+      mocks: { $nuxt: { context: { store: storeMock, i18n } } },
       provide: provided,
     }
   })
 
   describe('Above the medium breakpoint', () => {
     it('always shows the label and icon', () => {
-      provided.isMdScreen.value = true
+      provided.isMinScreenMd.value = true
       const { container } = render(VFilterButton, options)
 
       const button = screen.getByText('Filters')
@@ -69,7 +60,7 @@ describe('VFilterButton', () => {
       expect(icon).toBeVisible()
     })
     it('shows the count and text when filters are applied', () => {
-      provided.isMdScreen.value = true
+      provided.isMinScreenMd.value = true
       // +2 to guarantee it's plural
       const filterCount = Math.floor(Math.random() * 10) + 2
       appliedFilters = Array(filterCount).fill('')
@@ -80,7 +71,7 @@ describe('VFilterButton', () => {
       expect(button).toBeVisible()
     })
     it('does not show the icon when filters are applied', () => {
-      provided.isMdScreen.value = true
+      provided.isMinScreenMd.value = true
       appliedFilters = ['mockfilter1', 'mockfilter2']
 
       const { container } = render(VFilterButton, options)
@@ -92,7 +83,7 @@ describe('VFilterButton', () => {
 
   describe('below the medium breakpoint', () => {
     it('only shows the filter icon by default', () => {
-      provided.isMdScreen.value = false
+      provided.isMinScreenMd.value = false
       appliedFilters = []
       const { container } = render(VFilterButton, options)
 
@@ -103,7 +94,7 @@ describe('VFilterButton', () => {
       expect(label).not.toBeVisible()
     })
     it('only shows the count and label when filters are applied', () => {
-      provided.isMdScreen.value = false
+      provided.isMinScreenMd.value = false
       // +2 to guarantee it's plural
       const filterCount = Math.floor(Math.random() * 10) + 2
       appliedFilters = Array(filterCount).fill('')
@@ -116,7 +107,7 @@ describe('VFilterButton', () => {
       expect(button).toBeVisible()
     })
     it('only shows the count when filters are applied and the user scrolls', () => {
-      provided.isMdScreen.value = false
+      provided.isMinScreenMd.value = false
       provided.isHeaderScrolled.value = true
       // +2 to guarantee it's plural
       const filterCount = Math.floor(Math.random() * 10) + 2
