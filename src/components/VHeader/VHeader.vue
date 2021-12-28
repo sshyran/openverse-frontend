@@ -2,10 +2,10 @@
   <header
     class="sticky top-0 flex py-4 px-4 md:px-7 items-center justify-between z-40 w-full bg-white gap-x-2"
     :class="{
-      'border-b border-white': !isHeaderScrolled && !isFilterSidebarVisible,
+      'border-b border-white': !isHeaderScrolled && !isMenuModalOpen,
       'border-b border-dark-charcoal-20':
-        isSearchRoute && (isHeaderScrolled || isFilterSidebarVisible),
-      'flex-wrap gap-y-4': !isMinScreenMD && !isHeaderScrolled,
+        isSearchRoute && (isHeaderScrolled || isMenuModalOpen),
+      'flex-wrap gap-y-4': !isMinScreenMd && !isHeaderScrolled,
     }"
   >
     <NuxtLink
@@ -44,20 +44,26 @@
       </span>
     </VSearchBar>
 
-    <VFilterButton
+    <VContentSwitcher
       v-if="isSearchRoute"
-      :is-header-scrolled="isHeaderScrolled"
-      :pressed="isFilterSidebarVisible"
-      @toggle="toggleFilterVisibility"
+      :hide-buttons="showCloseButton"
+      @open="openMenuModal(menus.CONTENT_SWITCHER)"
+      @close="close()"
+    />
+    <VHeaderFilter
+      v-if="isSearchRoute"
+      :hide-buttons="showCloseButton"
+      @close="close()"
+      @open="openMenuModal(menus.FILTERS)"
     />
   </header>
 </template>
 
 <script>
-import OpenverseLogoText from '~/assets/icons/openverse-logo-text.svg?inline'
 import {
   computed,
   defineComponent,
+  provide,
   ref,
   useContext,
   useRouter,
@@ -77,10 +83,12 @@ import { useWindowScroll } from '~/composables/use-window-scroll'
 import { useFilterSidebarVisibility } from '~/composables/use-filter-sidebar-visibility'
 
 import closeIcon from '~/assets/icons/close.svg'
+import OpenverseLogoText from '~/assets/icons/openverse-logo-text.svg?inline'
 
-import VSearchBar from '~/components/VHeader/VSearchBar/VSearchBar'
-import VFilterButton from '~/components/VHeader/VFilterButton'
-import VLogoLoader from '~/components/VLogoLoader/VLogoLoader'
+import VContentSwitcher from '~/components/VHeader/VContentSwitcher.vue'
+import VHeaderFilter from '~/components/VHeader/VHeaderFilter.vue'
+import VLogoLoader from '~/components/VLogoLoader/VLogoLoader.vue'
+import VSearchBar from '~/components/VHeader/VSearchBar/VSearchBar.vue'
 
 const i18nKeys = {
   [AUDIO]: {
@@ -94,24 +102,76 @@ const i18nKeys = {
     more: 'browse-page.image-result-count-more',
   },
 }
+const menus = {
+  FILTERS: 'filters',
+  CONTENT_SWITCHER: 'content-switcher',
+}
 
 const VHeader = defineComponent({
   name: 'VHeader',
   components: {
-    VFilterButton,
+    VHeaderFilter,
+    VContentSwitcher,
     VLogoLoader,
     VSearchBar,
     OpenverseLogoText,
   },
   setup() {
     const { app, i18n, store } = useContext()
+    const router = useRouter()
+
     const { matches: isSearchRoute } = useMatchSearchRoutes()
     const { matches: isHomeRoute } = useMatchHomeRoute()
+
     const { isHeaderScrolled } = useWindowScroll()
-    const router = useRouter()
-    const isMinScreenMD = isMinScreen('md', { shouldPassInSSR: true })
-    const { isFilterSidebarVisible, setFilterSidebarVisibility } =
-      useFilterSidebarVisibility({ mediaQuery: isMinScreenMD })
+    const isMinScreenMd = isMinScreen('md', { shouldPassInSSR: true })
+    provide('isHeaderScrolled', isHeaderScrolled)
+    provide('isMinScreenMd', isMinScreenMd)
+
+    const menuModalRef = ref(null)
+
+    const { isVisible: isFilterVisible } = useFilterSidebarVisibility()
+
+    /**
+     * Set the active mobile menu view to the 'filters'
+     * if the filter sidebar has been toggled open.
+     */
+    watch([isFilterVisible], ([isFilterVisible]) => {
+      openMenu.value = isFilterVisible ? menus.FILTERS : null
+    })
+
+    /**
+     * @type {import('@nuxtjs/composition-api').Ref<null|'filters'|'content-switcher'>}
+     */
+    const openMenu = ref(null)
+    const isMenuModalOpen = computed(
+      () => !isMinScreenMd.value && openMenu.value !== null
+    )
+
+    /**
+     * @param {'filters'|'content-switcher'} menuName
+     */
+    const openMenuModal = (menuName) => {
+      if (openMenu.value !== null) {
+        close()
+      }
+      openMenu.value = menuName
+    }
+    const close = () => {
+      openMenu.value = null
+    }
+    /**
+     * Only returns true on search route (?) on mobile screen.
+     * Necessary to show 'close' button in the header.
+     * @type {import('@nuxtjs/composition-api').Ref<boolean>} */
+    const showCloseButton = computed(() => {
+      return !isMinScreenMd.value && openMenu.value !== null
+    })
+
+    /**  @type {import('@nuxtjs/composition-api').ComputedRef<boolean>} */
+    const isFetching = computed(() => {
+      return store.getters['media/fetchState'].isFetching
+    })
 
     /**
      * Return a text representation of the result count.
@@ -129,18 +189,13 @@ const VHeader = defineComponent({
     /** @type {import('@nuxtjs/composition-api').ComputedRef<number>} */
     const resultsCount = computed(() => store.getters['media/results'].count)
 
-    /**  @type {import('@nuxtjs/composition-api').ComputedRef<boolean>} */
-    const isFetching = computed(() => {
-      return store.getters['media/fetchState'].isFetching
-    })
-
     /**
      * Status is hidden below the medium breakpoint.
      * It shows Loading... or Number of results on bigger screens.
      * @returns {string}
      */
     const setInitialStatus = () => {
-      if (!isMinScreenMD.value) return ''
+      if (!isMinScreenMd.value) return ''
       if (isFetching.value) return i18n.t('header.loading')
       return store.state.search.query.q === ''
         ? ''
@@ -151,7 +206,7 @@ const VHeader = defineComponent({
     const searchStatus = ref(setInitialStatus())
 
     watchEffect(() => {
-      if (isMinScreenMD.value) {
+      if (isMinScreenMd.value) {
         searchStatus.value = isFetching.value
           ? i18n.t('header.loading')
           : mediaCount(resultsCount.value)
@@ -197,22 +252,31 @@ const VHeader = defineComponent({
       })
     }
 
-    const toggleFilterVisibility = () => {
-      setFilterSidebarVisibility(!isFilterSidebarVisible.value)
-    }
 
     return {
       closeIcon,
-      handleSearch,
       isFetching,
-      isFilterSidebarVisible,
+
       isHeaderScrolled,
-      isMinScreenMD,
+      isMinScreenMd,
+
       isSearchRoute,
       isHomeRoute,
+
+      showCloseButton,
+
+      menuModalRef,
+
+      openMenu,
+      openMenuModal,
+      isMenuModalOpen,
+
+      menus,
+      close,
+
+      handleSearch,
       searchStatus,
       searchTerm,
-      toggleFilterVisibility,
     }
   },
 })

@@ -1,0 +1,32 @@
+<template>
+  <VTeleport v-if="visible" :to="to"
+    ><VSearchGridFilter @close="$emit('close')"
+  /></VTeleport>
+</template>
+
+<script>
+import { defineComponent } from '@nuxtjs/composition-api'
+
+import { VTeleport } from '~/components/VTeleport'
+import VSearchGridFilter from '~/components/VFilters/VSearchGridFilter'
+
+/**
+ * Renders the inner content of a modal and manages focus.
+ */
+const VModalContent = defineComponent({
+  name: 'VSidebarContent',
+  components: { VTeleport, VSearchGridFilter },
+  props: {
+    visible: {
+      type: Boolean,
+      required: true,
+    },
+    to: {
+      type: String,
+      required: true,
+    },
+  },
+})
+
+export default VModalContent
+</script>
