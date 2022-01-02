@@ -1,7 +1,7 @@
 <template>
   <div ref="nodeRef">
     <VFilterButton
-      v-show="isMdScreen || (!isMdScreen && !visibleRef)"
+      v-show="isMdScreen || (!isMdScreen && !visibleRef && !hideButtons)"
       ref="buttonRef"
       :is-header-scrolled="isHeaderScrolled"
       :pressed="visibleRef"
@@ -46,6 +46,12 @@ export default {
     VMenuModal,
     VTeleport,
   },
+  props: {
+    hideButtons: {
+      type: Boolean,
+      required: true,
+    },
+  },
   emits: [
     /**
      * Fires when the popover opens, regardless of reason. There are no extra parameters.
@@ -89,21 +95,20 @@ export default {
 
     const open = () => {
       visibleRef.value = true
-      filterSidebar.isVisible.value = true
       emit('open')
-      if (!isMdScreen.value) {
-        lock()
-      }
     }
 
     const close = () => {
       visibleRef.value = false
-      filterSidebar.isVisible.value = false
       emit('close')
-      if (!isMdScreen.value) {
-        unlock()
-      }
     }
+
+    watch([visibleRef], () => {
+      filterSidebar.setVisibility(visibleRef.value)
+      if (!isMdScreen) {
+        visibleRef ? lock() : unlock()
+      }
+    })
 
     const onTriggerClick = () => {
       if (visibleRef.value === true) {

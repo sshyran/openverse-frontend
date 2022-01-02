@@ -13,7 +13,7 @@
 import iframeHeight from '~/mixins/iframe-height'
 
 import { NAV } from '~/constants/store-modules'
-import { useContext } from '@nuxtjs/composition-api'
+import { onMounted, useContext } from '@nuxtjs/composition-api'
 
 import TranslationStatusBanner from '~/components/TranslationStatusBanner.vue'
 import VHeader from '~/components/VHeader/VHeader.vue'
@@ -28,9 +28,10 @@ const embeddedPage = {
     return this.$nuxtI18nHead({ addSeoAttributes: true, addDirAttribute: true })
   },
   setup() {
+    console.log('Setting up default layout')
     const { store } = useContext()
     const isReferredFromCc = store.state[NAV].isReferredFromCc
-
+    onMounted(() => console.log('default layout mounted'))
     return {
       isReferredFromCc,
     }

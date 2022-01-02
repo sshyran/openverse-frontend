@@ -16,7 +16,7 @@
           @blur="onBlur"
         >
           <!-- This should be the same height as the header -->
-          <div class="w-full flex justify-end h-20 px-6">
+          <div class="w-full flex justify-end h-30 px-6">
             <VButton
               size="disabled"
               class="py-2"

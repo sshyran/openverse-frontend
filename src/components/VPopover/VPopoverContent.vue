@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="visible"
+    v-show="visible"
     ref="popoverRef"
     :class="$style.popover"
     :aria-hidden="!visible"

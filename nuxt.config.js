@@ -129,7 +129,7 @@ export default {
     dirs: [
       '~/components',
       '~/components/ContentReport',
-      '~/components/Filters',
+      '~/components/VFilters',
       '~/components/ImageDetails',
       '~/components/ImageGrid',
       '~/components/MediaInfo',
