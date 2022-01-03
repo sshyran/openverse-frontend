@@ -42,7 +42,7 @@ import closeIcon from '~/assets/icons/close.svg'
 
 import VLogoLoader from '~/components/VLogoLoader/VLogoLoader.vue'
 import VHeaderFilter from '~/components/VHeader/VHeaderFilter.vue'
-import VContentSwitcher from '~/components/VHeader/VContentSwitcher'
+import VContentSwitcher from '@/components/VHeader/VContentSwitcher'
 
 const VHeader = defineComponent({
   name: 'VHeader',

@@ -19,8 +19,8 @@
 </template>
 <script>
 import { computed, inject } from '@nuxtjs/composition-api'
-import caretDownIcon from '~/assets/icons/caret-down.svg'
-import VIcon from '~/components/VIcon/VIcon.vue'
+import caretDownIcon from 'assets/icons/caret-down.svg'
+import VIcon from '@/components/VIcon/VIcon.vue'
 
 export default {
   name: 'VContentSwitcherButton',

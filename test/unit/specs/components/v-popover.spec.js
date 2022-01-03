@@ -68,7 +68,7 @@ describe('VPopover', () => {
 
   it('should open the popover when the trigger is clicked', async () => {
     render(TestWrapper)
-
+    screen.debug()
     expectClosed()
 
     // doOpen already has the visible assertion built in

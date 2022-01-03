@@ -11,8 +11,8 @@
   </VButton>
 </template>
 <script>
-import ellipsisIcon from '~/assets/icons/ellipsis.svg'
-import VIcon from '~/components/VIcon/VIcon.vue'
+import ellipsisIcon from 'assets/icons/ellipsis.svg'
+import VIcon from '@/components/VIcon/VIcon.vue'
 
 export default {
   name: 'VPageMenuButton',

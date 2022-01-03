@@ -2,7 +2,6 @@
   <div class="browse-page flex flex-row w-screen">
     <div class="main-content w-full search-grid-ctr">
       <SearchGridForm @onSearchFormSubmit="onSearchFormSubmit" />
-      <SearchTypeTabs class="mb-4" />
       <VFilterDisplay v-show="shouldShowFilterTags" />
       <VSearchGrid
         :id="`tab-${searchType}`"
@@ -38,17 +37,16 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce'
 import {
   FETCH_MEDIA,
   UPDATE_QUERY,
   SET_SEARCH_STATE_FROM_URL,
   UPDATE_SEARCH_TYPE,
 } from '~/constants/action-types'
-import { queryStringToSearchType } from '~/utils/search-query-transform'
 import { ALL_MEDIA, AUDIO, IMAGE } from '~/constants/media'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { MEDIA, SEARCH } from '~/constants/store-modules'
-import debounce from 'lodash.debounce'
 
 import { isMinScreen } from '~/composables/use-media-query.js'
 import { useFilterSidebarVisibility } from '~/composables/use-filter-sidebar-visibility'
@@ -69,7 +67,7 @@ const BrowsePage = {
   },
   setup() {
     const isMdScreen = isMinScreen('md')
-    const { isVisible } = useFilterSidebarVisibility({ mediaQuery: isMdScreen })
+    const { isVisible } = useFilterSidebarVisibility()
 
     return {
       isMdScreen,
@@ -158,27 +156,17 @@ const BrowsePage = {
   watch: {
     query: {
       deep: true,
-      handler() {
+      handler(newQuery) {
+        const searchPathType = this.searchType === 'all' ? '' : this.searchType
         const newPath = this.localePath({
-          path: this.$route.path,
+          path: `/search/${searchPathType}`,
           query: this.searchQueryParams,
         })
         this.$router.push(newPath)
         if (this.supported) {
-          this.getMediaItems(this.query)
+          this.getMediaItems(newQuery)
         }
       },
-    },
-    /**
-     * Updates the search type only if the route's path changes.
-     * @param newRoute
-     * @param oldRoute
-     */
-    $route(newRoute, oldRoute) {
-      if (newRoute.path !== oldRoute.path) {
-        const searchType = queryStringToSearchType(newRoute.path)
-        this.updateSearchType({ searchType })
-      }
     },
   },
 }

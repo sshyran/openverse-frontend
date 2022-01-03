@@ -21,11 +21,11 @@
   </VItemGroup>
 </template>
 <script>
-import VIcon from '~/components/VIcon/VIcon.vue'
-import VItem from '~/components/VItemGroup/VItem.vue'
-import VItemGroup from '~/components/VItemGroup/VItemGroup.vue'
+import VIcon from '@/components/VIcon/VIcon.vue'
+import VItem from '@/components/VItemGroup/VItem.vue'
+import VItemGroup from '@/components/VItemGroup/VItemGroup.vue'
 
-import checkIcon from '~/assets/icons/checkmark.svg'
+import checkIcon from 'assets/icons/checkmark.svg'
 
 export default {
   name: 'VContentTypePopover',

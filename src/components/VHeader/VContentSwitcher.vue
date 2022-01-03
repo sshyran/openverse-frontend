@@ -18,7 +18,7 @@
         :icon="icons[content.activeType.value]"
         :active-item="content.activeType.value"
         :a11y-props="a11yProps"
-        @click="handleClick"
+        @click="$emit('click')"
       />
     </template>
     <template #content-switcher-content>
@@ -32,20 +32,20 @@
   </Component>
 </template>
 <script>
-import { computed, inject, onMounted } from '@nuxtjs/composition-api'
-
-import VContentSwitcherButton from '~/components/VHeader/VContentSwitcherButton.vue'
-import VContentTypePopover from '~/components/VHeader/VContentTypePopover.vue'
-import VPageMenuButton from '~/components/VHeader/VPageMenuButton.vue'
-import VPageMenuPopover from '~/components/VHeader/VPageMenuPopover.vue'
-import VDesktopSwitcher from '@/components/VHeader/VDesktopSwitcher'
-// import VMobileContentSwitcher from '@/components/VHeader/VMobileContentSwitcher'
+import { inject, onMounted, ref, watch } from '@nuxtjs/composition-api'
 import useContentType from '@/composables/use-content-type'
 
 import allIcon from 'assets/icons/all-content.svg'
 import audioIcon from 'assets/icons/audio-content.svg'
 import imageIcon from 'assets/icons/image-content.svg'
 import ellipsisIcon from 'assets/icons/ellipsis.svg'
+
+import VContentSwitcherButton from '@/components/VHeader/VContentSwitcher/VContentSwitcherButton.vue'
+import VContentTypePopover from '@/components/VHeader/VContentSwitcher/VContentTypePopover.vue'
+import VPageMenuButton from '@/components/VHeader/VContentSwitcher/VPageMenuButton.vue'
+import VPageMenuPopover from '@/components/VHeader/VContentSwitcher/VPageMenuPopover.vue'
+import VDesktopSwitcher from '@/components/VHeader/VContentSwitcher/VDesktopSwitcher.vue'
+import VMobileContentSwitcher from '@/components/VHeader/VContentSwitcher/VMobileContentSwitcher.vue'
 
 const icons = {
   all: allIcon,
@@ -65,25 +65,33 @@ export default {
     currentMenu: {},
   },
   setup(_, { emit }) {
-    console.log('VContentSwitcher setup')
     const isMdScreen = inject('isMdScreen')
-
+    const menuModalRef = ref(null)
     const content = useContentType()
-    // const pages = usePages()
+
     /**
-     * @type {ComputedRef<import('@nuxtjs/composition-api').Component>}
+     * @type {Ref<import('@nuxtjs/composition-api').Component>}
      */
-    const switcherComponent = computed(
-      () => VDesktopSwitcher
-      // isMdScreen.value ? VDesktopSwitcher : VMobileContentSwitcher
+    const switcherComponent = ref(VMobileContentSwitcher)
+    // Is there a way to understand whether the component is mounted or not?
+    let mounted = ref(false)
+    onMounted(() => (mounted.value = true))
+    watch(
+      [isMdScreen],
+      () => {
+        if (mounted.value) {
+          switcherComponent.value = isMdScreen.value
+            ? VDesktopSwitcher
+            : VMobileContentSwitcher
+        }
+      },
+      { immediate: true }
     )
-    const handleClick = () => {
-      console.log('cw button clicked')
-      openMenu()
-    }
+
     const handleContentTypeClick = (item) => {
-      console.log('[VContentSwitcher] is on! content type clicked', item)
       content.setActiveType(item)
+      menuModalRef.value?.closeMenu()
+      closeMenu()
     }
     const openMenu = () => {
       emit('open-menu')
@@ -91,9 +99,6 @@ export default {
     const closeMenu = () => {
       emit('close-menu')
     }
-    onMounted(() => {
-      console.log('VContentSwitcher mounted')
-    })
     return {
       content,
       icons,
@@ -102,7 +107,7 @@ export default {
       openMenu,
       closeMenu,
       handleContentTypeClick,
-      handleClick,
+      menuModalRef,
     }
   },
 }

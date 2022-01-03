@@ -1,11 +1,12 @@
 <template>
-  <div ref="nodeRef">
-    <slot
-      name="content-switcher-button"
-      :a11yProps="triggerA11yProps"
-      :visible="visibleRef"
-      :handleClick="onTriggerClick"
-    />
+  <div ref="nodeRef" class="ms-auto me-4">
+    <div @click="onTriggerClick">
+      <slot
+        name="content-switcher-button"
+        :a11yProps="triggerA11yProps"
+        :visible="visibleRef"
+      />
+    </div>
     <div class="hidden">
       <slot name="page-switcher-button" />
     </div>
@@ -24,9 +25,9 @@
 
 <script>
 import { ref, watch, reactive, inject, computed } from '@nuxtjs/composition-api'
-import { useBodyScrollLock } from '~/composables/use-body-scroll-lock'
+import { useBodyScrollLock } from '@/composables/use-body-scroll-lock'
 
-import VMenuModal from '~/components/VHeader/VMenuModal.vue'
+import VMenuModal from '@/components/VHeader/VMenuModal.vue'
 
 export default {
   name: 'VMobileContentSwitcher',
@@ -102,6 +103,7 @@ export default {
       triggerA11yProps,
       isMdScreen,
       triggerElementRef,
+      closeMenu: close,
     }
   },
 }

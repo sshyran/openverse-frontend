@@ -25,7 +25,7 @@
 <script>
 import { inject, ref } from '@nuxtjs/composition-api'
 
-import VPopover from '~/components/VPopover/VPopover.vue'
+import VPopover from '@/components/VPopover/VPopover.vue'
 
 export default {
   name: 'VDesktopSwitcher',

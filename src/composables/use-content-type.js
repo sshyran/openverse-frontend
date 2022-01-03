@@ -1,24 +1,17 @@
-import {
-  ssrRef,
-  useContext,
-  useRoute,
-  useRouter,
-  watch,
-} from '@nuxtjs/composition-api'
+import { ref, useContext, watch } from '@nuxtjs/composition-api'
 import { SEARCH } from '~/constants/store-modules'
 import { UPDATE_QUERY } from '~/constants/action-types'
 
 const contentTypes = ['all', 'audio', 'image']
-const previousContentType = ssrRef(null)
-const activeType = ssrRef(null)
+/**@type {import('@nuxtjs/composition-api').Ref<'all'|'audio'|'image'|'video'|null>} */
+const previousContentType = ref(null)
+/** @type {import('@nuxtjs/composition-api').Ref<'all'|'audio'|'image'|'video'>} */
+const activeType = ref('image')
 
 export default function useContentType() {
-  const { app, store } = useContext()
-  const route = useRoute()
-  const router = useRouter()
+  const { store } = useContext()
   activeType.value = store.state.search.searchType
 
-  console.log('usecontenttype', activeType.value, previousContentType.value)
   watch(
     () => store.state.search.searchType,
     (newSearchType) => (activeType.value = newSearchType)
@@ -28,14 +21,8 @@ export default function useContentType() {
     await store.dispatch(`${SEARCH}/${UPDATE_QUERY}`, {
       searchType: contentType,
     })
-    previousContentType.value = contentType
-    const type = contentType === 'all' ? '' : contentType
 
-    const newPath = app.localePath({
-      path: `/search/${type}`,
-      query: route.value.query,
-    })
-    router.push(newPath)
+    previousContentType.value = contentType
   }
 
   return {
