@@ -92,7 +92,6 @@ export default defineComponent({
       default: 'default',
       validator: (val) => ['default', 'full'].includes(val),
     },
-    isMdScreen: { type: Boolean, default: false },
   },
   emits: [
     /**

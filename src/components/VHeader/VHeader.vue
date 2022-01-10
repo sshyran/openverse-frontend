@@ -163,7 +163,7 @@ const VHeader = defineComponent({
     /**
      * Only returns true on search route (?) on mobile screen.
      * Necessary to show 'close' button in the header.
-     * @type {import('@nuxtjs/composition-api').Ref<boolean>} */
+     * @type {import('@nuxtjs/composition-api').ComputedRef<boolean>} */
     const showCloseButton = computed(() => {
       return !isMinScreenMd.value && openMenu.value !== null
     })

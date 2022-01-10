@@ -11,9 +11,9 @@ import VTeleport from '~/components/VTeleport/VTeleport.vue'
 import VSearchGridFilter from '~/components/VFilters/VSearchGridFilter'
 
 /**
- * Renders the inner content of a modal and manages focus.
+ * Renders the inner content of the sidebar and manages focus.
  */
-const VModalContent = defineComponent({
+const VSidebarContent = defineComponent({
   name: 'VSidebarContent',
   components: { VTeleport, VSearchGridFilter },
   props: {
@@ -28,5 +28,5 @@ const VModalContent = defineComponent({
   },
 })
 
-export default VModalContent
+export default VSidebarContent
 </script>

@@ -2,7 +2,7 @@
   <div
     class="py-8 px-10 search-filters"
     :class="{
-      'bg-dark-charcoal-06 border-dark-charcoal-20': isMdScreen,
+      'bg-dark-charcoal-06': isMinScreenMd,
     }"
     data-testid="filters-list"
     @onUpdateFilter="onUpdateFilter"
@@ -62,7 +62,7 @@ export default {
   },
   setup() {
     const { i18n, store } = useContext()
-    const isMdScreen = isMinScreen('md')
+    const isMinScreenMd = isMinScreen('md')
 
     const isAnyFilterApplied = computed(
       () => store.getters[`${SEARCH}/isAnyFilterApplied`]
@@ -91,7 +91,7 @@ export default {
       filterTypeTitle,
       clearFilters,
       onUpdateFilter,
-      isMdScreen,
+      isMinScreenMd,
     }
   },
 }

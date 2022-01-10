@@ -21,7 +21,8 @@ import { isMinScreen } from '@/composables/use-media-query'
 import TranslationStatusBanner from '~/components/TranslationStatusBanner.vue'
 import VHeader from '~/components/VHeader/VHeader.vue'
 import VModalTarget from '~/components/VModal/VModalTarget.vue'
-import VSidebarTarget from '@/components/VModal/VSidebarTarget'
+import VSidebarTarget from '~/components/VModal/VSidebarTarget.vue'
+import { useMatchSearchRoutes } from '@/composables/use-match-routes'
 
 const embeddedPage = {
   name: 'embedded',
@@ -42,9 +43,11 @@ const embeddedPage = {
 
     const filterSidebar = useFilterSidebarVisibility()
     const isMdScreen = isMinScreen('md')
+    const isSearchRoute = useMatchSearchRoutes()
 
     const isSidebarVisible = computed(
-      () => filterSidebar.isVisible.value && isMdScreen.value
+      () =>
+        isSearchRoute.value && filterSidebar.isVisible.value && isMdScreen.value
     )
 
     return {
@@ -99,6 +102,5 @@ export default embeddedPage
 
 .main::-webkit-scrollbar-thumb {
   background-color: #6e686d;
-  border-radius: 20px;
 }
 </style>

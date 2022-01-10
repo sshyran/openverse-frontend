@@ -60,19 +60,20 @@ export default {
   ],
   setup(_, { emit }) {
     const modalRef = ref(null)
+    /** @type { import('@nuxtjs/composition-api').Ref<boolean> } */
     const visibleRef = ref(false)
     const nodeRef = ref(null)
 
-    /** @type {import('@nuxtjs/composition-api').Ref<HTMLElement | undefined>} */
+    /** @type { import('@nuxtjs/composition-api').Ref<HTMLElement | undefined> } */
     const buttonRef = ref()
     const filterSidebar = useFilterSidebarVisibility()
     const { i18n } = useContext()
-    /** @type {import('@nuxtjs/composition-api').Ref<boolean>} */
+    /** @type { import('@nuxtjs/composition-api').Ref<boolean> } */
     const isMinScreenMd = inject('isMinScreenMd')
-    /** @type {import('@nuxtjs/composition-api').Ref<boolean>} */
+    /** @type { import('@nuxtjs/composition-api').Ref<boolean> } */
     const isHeaderScrolled = inject('isHeaderScrolled')
 
-    /** @type {import('@nuxtjs/composition-api').Ref<import('@nuxtjs/composition-api').Component>} */
+    /** @type { import('@nuxtjs/composition-api').Ref<import('@nuxtjs/composition-api').Component> } */
     const filterComponent = ref(VModalContent)
 
     const triggerA11yProps = reactive({
@@ -107,21 +108,22 @@ export default {
       }
     }
     const mobileOptions = {
-      visible: computed(() => visibleRef.value),
+      visible: visibleRef,
       'trigger-element': computed(() => nodeRef?.value?.firstChild),
       hide: close,
       'aria-label': i18n.t('header.filter-button.simple'),
       mode: 'mobile',
     }
+
     const desktopOptions = {
       to: 'sidebar',
-      visible: computed(() => visibleRef.value),
+      visible: visibleRef,
     }
     /**
-     * @type {Ref<{'trigger-element'?: ComputedRef<HTMLElement|null>,
-     * hide?: close, visible: ComputedRef<boolean>,
-     * 'aria-label'?: string,
-     * to?: string, mode?: string}>}
+     * @type { import('@nuxtjs/composition-api').Ref<{
+     * 'trigger-element'?: import('@nuxtjs/composition-api').ComputedRef<HTMLElement|null>,
+     * hide?: () => {}, visible: import('@nuxtjs/composition-api').Ref<boolean>,
+     * 'aria-label': [string], to?: string, mode?: string }> }
      */
     const options = ref(mobileOptions)
     onMounted(() => {

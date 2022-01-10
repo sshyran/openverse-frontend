@@ -41,10 +41,11 @@
 
 <script>
 import helpIcon from '~/assets/icons/help.svg'
-import VLicenseExplanationTooltip from '~/components/VFilters/VLicenseExplanationTooltip'
+
+import VLicenseExplanationTooltip from '~/components/VFilters/VLicenseExplanationTooltip.vue'
 import VCheckbox from '~/components/VCheckbox.vue'
 import VLicense from '~/components/License/VLicense.vue'
-import VIcon from '@/components/VIcon/VIcon'
+import VIcon from '~/components/VIcon/VIcon'
 
 export default {
   name: 'FilterCheckList',
