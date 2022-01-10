@@ -3,9 +3,6 @@
     <div class="main-content w-full search-grid-ctr">
       <VFilterDisplay v-show="shouldShowFilterTags" />
       <VSearchGrid
-        :id="`tab-${searchType}`"
-        role="tabpanel"
-        :aria-labelledby="searchType"
         :fetch-state="fetchState"
         :query="query"
         :supported="supported"
