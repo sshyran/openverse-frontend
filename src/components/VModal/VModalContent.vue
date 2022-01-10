@@ -17,7 +17,7 @@
           <!-- For mobile modal, the height should be the same  as the header height -->
           <div
             class="w-full flex justify-end"
-            :class="{ 'h-20 px-6': mode === 'mobile' }"
+            :class="{ 'h-20 px-6 py-6 shrink-0': mode === 'mobile' }"
           >
             <VButton
               size="disabled"
