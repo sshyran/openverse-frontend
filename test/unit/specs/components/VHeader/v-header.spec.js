@@ -35,6 +35,9 @@ describe('VHeader', () => {
   let localVue
   let appliedFilters = []
   let props = {}
+  let provided = {
+    isHeaderScrolled: ref(false),
+  }
 
   const i18n = new VueI18n({
     locale: 'en',
@@ -79,6 +82,7 @@ describe('VHeader', () => {
         $nuxt: { context: { store: storeMock, i18n } },
       },
       stubs: { NuxtLink: true },
+      provide: provided,
     }
   })
   describe('Non-search header', () => {
