@@ -3,7 +3,6 @@
     <VFilterButton
       v-show="isMinScreenMd || (!isMinScreenMd && !visibleRef && !hideButtons)"
       ref="buttonRef"
-      :is-header-scrolled="isHeaderScrolled"
       :pressed="visibleRef"
       v-bind="triggerA11yProps"
       @toggle="onTriggerClick"
