@@ -77,14 +77,16 @@ const BrowsePage = {
   data: () => ({
     showScrollButton: false,
   }),
-  async created() {
-    this.debounceScrollHandling = debounce(this.checkScrollLength, 100)
+  async asyncData({ route, store }) {
     if (process.server) {
-      await this.setSearchStateFromUrl({
-        path: this.$route.path,
-        query: this.$route.query,
+      await store.dispatch(`${SEARCH}/${SET_SEARCH_STATE_FROM_URL}`, {
+        path: route.path,
+        query: route.query,
       })
     }
+  },
+  async created() {
+    this.debounceScrollHandling = debounce(this.checkScrollLength, 100)
   },
   mounted() {
     window.addEventListener('scroll', this.debounceScrollHandling)
@@ -174,7 +176,6 @@ export default BrowsePage
 
 <style lang="scss" scoped>
 .search-grid-ctr {
-  background-color: $color-wp-gray-0;
   min-height: 600px;
   padding: 0;
 
