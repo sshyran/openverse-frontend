@@ -174,7 +174,6 @@ export default BrowsePage
 
 <style lang="scss" scoped>
 .search-grid-ctr {
-  background-color: $color-wp-gray-0;
   min-height: 600px;
   padding: 0;
 

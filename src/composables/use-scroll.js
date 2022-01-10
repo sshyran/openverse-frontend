@@ -19,6 +19,7 @@ export function useScroll(element, { throttleMs = 200 } = {}) {
    * @type { import('@nuxtjs/composition-api').Ref<boolean> }
    */
   const isScrolled = ref(false)
+
   if (element) {
     /** @param { Event } e */
     const scrollHandler = (e) => {

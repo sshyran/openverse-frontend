@@ -31,6 +31,11 @@ export function useEventListener(target, event, handler, options = {}) {
   }
   // clean it up
   onBeforeUnmount(() => {
-    unref(target)?.removeEventListener(event, handler)
+    const unreffed = unref(target)
+    if (unreffed.$el) {
+      unreffed.$el.removeEventListener(event, handler)
+    } else {
+      unreffed.removeEventListener(event, handler)
+    }
   })
 }

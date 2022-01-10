@@ -1,10 +1,10 @@
 <template>
   <header
-    class="sticky top-0 flex py-4 px-4 md:px-7 items-center justify-between z-40 w-full bg-white gap-x-2"
+    class="fixed top-0 flex py-4 px-4 md:px-7 items-center justify-between z-40 w-full bg-white gap-x-2"
     :class="{
-      'border-b border-white': !isHeaderScrolled && !isMenuModalOpen,
+      'border-b border-white': !isHeaderScrolled && !isMenuOpen,
       'border-b border-dark-charcoal-20':
-        isSearchRoute && (isHeaderScrolled || isMenuModalOpen),
+        isSearchRoute && (isHeaderScrolled || isMenuOpen),
       'flex-wrap gap-y-4': !isMinScreenMd && !isHeaderScrolled,
     }"
   >
@@ -63,6 +63,7 @@
 import {
   computed,
   defineComponent,
+  inject,
   provide,
   ref,
   useContext,
@@ -79,7 +80,6 @@ import {
   useMatchSearchRoutes,
   useMatchHomeRoute,
 } from '~/composables/use-match-routes'
-import { useWindowScroll } from '~/composables/use-window-scroll'
 import { useFilterSidebarVisibility } from '~/composables/use-filter-sidebar-visibility'
 
 import closeIcon from '~/assets/icons/close.svg'
@@ -123,9 +123,8 @@ const VHeader = defineComponent({
     const { matches: isSearchRoute } = useMatchSearchRoutes()
     const { matches: isHomeRoute } = useMatchHomeRoute()
 
-    const { isHeaderScrolled } = useWindowScroll()
+    const isHeaderScrolled = inject('isHeaderScrolled')
     const isMinScreenMd = isMinScreen('md', { shouldPassInSSR: true })
-    provide('isHeaderScrolled', isHeaderScrolled)
     provide('isMinScreenMd', isMinScreenMd)
 
     const menuModalRef = ref(null)
@@ -144,9 +143,7 @@ const VHeader = defineComponent({
      * @type {import('@nuxtjs/composition-api').Ref<null|'filters'|'content-switcher'>}
      */
     const openMenu = ref(null)
-    const isMenuModalOpen = computed(
-      () => !isMinScreenMd.value && openMenu.value !== null
-    )
+    const isMenuOpen = computed(() => openMenu.value !== null)
 
     /**
      * @param {'filters'|'content-switcher'} menuName
@@ -268,7 +265,7 @@ const VHeader = defineComponent({
 
       openMenu,
       openMenuModal,
-      isMenuModalOpen,
+      isMenuOpen,
 
       menus,
       close,
