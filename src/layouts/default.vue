@@ -43,7 +43,7 @@ const embeddedPage = {
 
     const filterSidebar = useFilterSidebarVisibility()
     const isMdScreen = isMinScreen('md')
-    const isSearchRoute = useMatchSearchRoutes()
+    const { matches: isSearchRoute } = useMatchSearchRoutes()
 
     const isSidebarVisible = computed(
       () =>
